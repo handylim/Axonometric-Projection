@@ -1,0 +1,15 @@
+# Axonometric Projection
+
+Axonometric projection is used for creating a pictorial drawing of an object, where the lines of sight are perpendicular to the plane of projection, and the object is rotated around one or more of its axes to reveal multiple sides.
+Axonometric projection shows an image of an object as viewed from a skew direction in order to reveal more than one side of the object in the same picture. With axonometric projections the scale of distant features is the same as for near features, so such pictures will look distorted, as it is not how human vision or photography works. This distortion, the direct result of a presence or absence of foreshortening, is especially evident if the object to view is mostly composed of rectangular features. Despite this limitation, axonometric projection can be useful for purposes of illustration.
+
+The 3 types of axonometric projection are isometric projection, dimetric projection, and trimetric projection, depending on the exact angle at which the view deviates from the orthogonal. Typically in axonometric drawing, as in other types of pictorials, one axis of space is shown as the vertical.
+1. In **isometric** projection, the most commonly used form of axonometric projection in engineering drawing, the direction of viewing is such that the three axes of space appear equally foreshortened, and there is a common angle of 120° between them. As the distortion caused by foreshortening is uniform the proportionality of all sides and lengths are preserved, and the axes share a common scale. This enables measurements to be read or taken directly from the drawing. Another advantage is that 120° angles are more easily constructed using only a compass and straightedge.
+2. In **dimetric** projection, the direction of viewing is such that two of the three axes of space appear equally foreshortened, of which the attendant scale and angles of presentation are determined according to the angle of viewing; the scale of the third direction (vertical) is determined separately. Dimensional approximations are common in dimetric drawings.
+3. In **trimetric** projection, the direction of viewing is such that all of the three axes of space appear unequally foreshortened. The scale along each of the three axes and the angles among them are determined separately as dictated by the angle of viewing. Dimensional approximations in trimetric drawings are common, and trimetric perspective is seldom used.
+
+This web app can simulate the rotation of a 3D cube. The initial position of the cube's vertices are at `(-1, -1, -1)`, `(-1, 1, -1)`, `(1, -1, -1)`, `(1, 1, -1)`, `(-1, -1, 1)`, `(-1, 1, 1)`, `(1, -1, 1)`, and `(1, 1, 1)`. The red lines indicate the front face of the cube. This program can do all of the followings:
+1. Rotate the cube around the x, y, and z axes of the cube with `(0, 0, 0)` as the center point
+2. Rotate the cube around the x, y, and z axes of the world scene with `(0, 0, 0)` as the center point
+3. Rotate the cube on an arbitrary axis with `(0, 0, 0)` of the world scene as the center point
+4. Animate the cube rotating on an axis
