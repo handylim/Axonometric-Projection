@@ -2,6 +2,8 @@ var canvas                     = document.getElementById('canvas'),
     context                    = canvas.getContext('2d'),
     canvasHeight               = canvas.height,
     canvasWidth                = canvas.width,
+    vertices                   = [],
+    edges                      = [],
     /* screenTransformationMatrix = (matrixOfPointsAtViewCoordinateSystem ^ -1) * matrixOfPointsAtScreenCoordinateSystem
      * For more details:
      * https://www.symbolab.com/solver/matrix-multiply-calculator/%5Cbegin%7Bpmatrix%7D0%260%261%5C%5C%20%20%20-2%262%261%5C%5C%20%20%20-2%26-2%261%5Cend%7Bpmatrix%7D%5E%7B-1%7D%5Cbegin%7Bpmatrix%7D325%26325%261%5C%5C%20%20%200%26650%261%5C%5C%20%20%200%260%261%5Cend%7Bpmatrix%7D
@@ -110,6 +112,28 @@ function multiplyMatrix (a, b) {
 
 canvas = $('#canvas');
 context.transform(1, 0, 0, -1, 0, canvasHeight); // to make the origin (0, 0) at the bottom left of the canvas
+
+vertices.push(new Vertex(-1, -1, 1));
+vertices.push(new Vertex(1, -1, 1));
+vertices.push(new Vertex(1, 1, 1));
+vertices.push(new Vertex(-1, 1, 1));
+vertices.push(new Vertex(-1, -1, -1));
+vertices.push(new Vertex(1, -1, -1));
+vertices.push(new Vertex(1, 1, -1));
+vertices.push(new Vertex(-1, 1, -1));
+
+edges.push(new Edge(0, 1));
+edges.push(new Edge(1, 2));
+edges.push(new Edge(2, 3));
+edges.push(new Edge(3, 0));
+edges.push(new Edge(4, 5));
+edges.push(new Edge(5, 6));
+edges.push(new Edge(6, 7));
+edges.push(new Edge(7, 4));
+edges.push(new Edge(0, 4));
+edges.push(new Edge(1, 5));
+edges.push(new Edge(2, 6));
+edges.push(new Edge(3, 7));
 
 $(document).ready(function () {
 	$('h1:first').remove();
