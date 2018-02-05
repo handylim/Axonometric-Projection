@@ -110,6 +110,104 @@ function multiplyMatrix (a, b) {
 	return result;
 }
 
+function normalizeVector (x, y, z) {
+	var length = Math.sqrt(x * x + y * y + z * z);
+
+	return new Vector(x / length, y / length, z / length);
+}
+
+function findNormalizationAxisMatrix (vector) {
+	var d = Math.sqrt(vector.y * vector.y + vector.z * vector.z);
+
+	return multiplyMatrix([
+		                      [1, 0, 0, 0],
+		                      [0, vector.z / d, vector.y / d, 0],
+		                      [0, -1 * vector.y / d, vector.z / d, 0],
+		                      [0, 0, 0, 1]
+	                      ], [
+		                      [d, 0, vector.x, 0],
+		                      [0, 1, 0, 0],
+		                      [-1 * vector.x, 0, d, 0],
+		                      [0, 0, 0, 1]
+	                      ]);
+}
+
+function findDenormalizationAxisMatrix (vector) {
+	var d = Math.sqrt(vector.y * vector.y + vector.z * vector.z);
+
+	return multiplyMatrix([
+		                      [d, 0, -1 * vector.x, 0],
+		                      [0, 1, 0, 0],
+		                      [vector.x, 0, d, 0],
+		                      [0, 0, 0, 1]
+	                      ], [
+		                      [1, 0, 0, 0],
+		                      [0, vector.z / d, -1 * vector.y / d, 0],
+		                      [0, vector.y / d, vector.z / d, 0],
+		                      [0, 0, 0, 1]
+	                      ]);
+}
+
+function findRotationMatrix (x, y, z) {
+	// convert from degree to radian
+	x *= Math.PI / 180;
+	y *= Math.PI / 180;
+	z *= Math.PI / 180;
+
+	var result = [
+		[1, 0, 0, 0],
+		[0, 1, 0, 0],
+		[0, 0, 1, 0],
+		[0, 0, 0, 1]
+	];
+
+	if (x !== 0)
+		result = multiplyMatrix(result, [
+			[1, 0, 0, 0],
+			[0, Math.cos(x), Math.sin(x), 0],
+			[0, -1 * Math.sin(x), Math.cos(x), 0],
+			[0, 0, 0, 1]
+		]);
+
+	if (y !== 0)
+		result = multiplyMatrix(result, [
+			[Math.cos(y), 0, -1 * Math.sin(y), 0],
+			[0, 1, 0, 0],
+			[Math.sin(y), 0, Math.cos(y), 0],
+			[0, 0, 0, 1]
+		]);
+
+	if (z !== 0)
+		result = multiplyMatrix(result, [
+			[Math.cos(z), Math.sin(z), 0, 0],
+			[-1 * Math.sin(z), Math.cos(z), 0, 0],
+			[0, 0, 1, 0],
+			[0, 0, 0, 1]
+		]);
+
+	return result;
+}
+
+function rotate (xCube, yCube, zCube, xCamera, yCamera, zCamera) {
+	var worldCoordinateSystemPosition, viewCoordinateSystemPosition, screenCoordinateSystemPosition;
+
+	worldCoordinateSystemPosition = multiplyMatrix(convertVerticesToMatrix(vertices), findRotationMatrix(xCube, yCube, zCube));
+	viewCoordinateSystemPosition = multiplyMatrix(worldCoordinateSystemPosition, findRotationMatrix(xCamera, yCamera, zCamera));
+	screenCoordinateSystemPosition = multiplyMatrix(viewCoordinateSystemPosition, screenTransformationMatrix);
+
+	return screenCoordinateSystemPosition;
+}
+
+function rotateOnArbitraryAxis (normalizedVertices, teta, denormalizationAxisMatrix) {
+	var viewCoordinateSystemPosition, denormalizedVertices, screenCoordinateSystemPosition;
+
+	viewCoordinateSystemPosition = multiplyMatrix(normalizedVertices, findRotationMatrix(0, 0, teta));
+	denormalizedVertices = multiplyMatrix(viewCoordinateSystemPosition, denormalizationAxisMatrix);
+	screenCoordinateSystemPosition = multiplyMatrix(denormalizedVertices, screenTransformationMatrix);
+
+	return screenCoordinateSystemPosition;
+}
+
 canvas = $('#canvas');
 context.transform(1, 0, 0, -1, 0, canvasHeight); // to make the origin (0, 0) at the bottom left of the canvas
 
@@ -137,6 +235,8 @@ edges.push(new Edge(3, 7));
 
 $(document).ready(function () {
 	$('h1:first').remove();
+	screenTransformationResult = convertMatrixToVertices(rotate(0, 0, 0, 0, 0, 0));
+	draw();
 
 	canvas.on('contextmenu', function () { // prevent right click context menu from popping up in the canvas
 		return false;
