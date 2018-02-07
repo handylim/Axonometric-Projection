@@ -237,6 +237,149 @@ $(document).ready(function () {
 	$('h1:first').remove();
 	screenTransformationResult = convertMatrixToVertices(rotate(0, 0, 0, 0, 0, 0));
 	draw();
+	$('input[type=text]').val('');
+	$('input[type=radio], input[type=checkbox]').prop('checked', false);
+
+	var buttonRotateCube                         = $('#btnRotateCube'),
+	    buttonRotateCamera                       = $('#btnRotateCamera'),
+	    buttonRotateOnArbitraryAxis              = $('#btnRotateOnArbitraryAxis'),
+	    rotateCubeInputs                         = $('input[type=text][name=rotateCube].form-control'),
+	    rotateCameraInputs                       = $('input[type=text][name=rotateCamera].form-control'),
+	    rotateOnArbitraryAxisInputs              = $('input[type=text][name=rotateOnArbitraryAxis].form-control'),
+	    cubeRotation                             = new Rotation (0, 0, 0),
+	    cameraRotation                           = new Rotation (0, 0, 0),
+	    isCubeRotationChanged,
+	    isCameraRotationChanged;
+
+	rotateCubeInputs.on('input', function () {
+		var isInvalid      = isNaN($(this).val().trim()),
+		    errorContainer = $(this).siblings('div.invalid-feedback');
+
+		errorContainer.html(errorContainer.data('invalidMessage'));
+		isInvalid ? $(this).addClass('is-invalid') : $(this).removeClass('is-invalid');
+		buttonRotateCube.prop('disabled', isInvalid);
+		isCubeRotationChanged = true;
+	});
+
+	rotateCameraInputs.on('input', function () {
+		var isInvalid      = isNaN($(this).val().trim()),
+		    errorContainer = $(this).siblings('div.invalid-feedback');
+
+		errorContainer.html(errorContainer.data('invalidMessage'));
+		isInvalid ? $(this).addClass('is-invalid') : $(this).removeClass('is-invalid');
+		buttonRotateCamera.prop('disabled', isInvalid);
+		isCameraRotationChanged = true;
+	});
+
+	rotateOnArbitraryAxisInputs.on('input', function () {
+		var isInvalid      = isNaN($(this).val().trim()),
+		    errorContainer = $(this).siblings('div.invalid-feedback');
+
+		errorContainer.html(errorContainer.data('invalidMessage'));
+		isInvalid ? $(this).addClass('is-invalid') : $(this).removeClass('is-invalid');
+		buttonRotateOnArbitraryAxis.prop('disabled', isInvalid);
+	});
+
+	buttonRotateCube.on('click', function () {
+		var isValid = true;
+		rotateCubeInputs.each(function () {
+			var errorContainer;
+			if ($(this).val() === '') {
+				isValid = false;
+				errorContainer = $(this).siblings('div.invalid-feedback');
+				errorContainer.html(errorContainer.data('requiredMessage'));
+				isValid ? $(this).removeClass('is-invalid') : $(this).addClass('is-invalid');
+			}
+		});
+
+		if (!isValid)
+			return false;
+
+		if (isCubeRotationChanged) {
+			cubeRotation.x = parseInt($('#rotateCubeX').val().trim(), 10);
+			cubeRotation.y = parseInt($('#rotateCubeY').val().trim(), 10);
+			cubeRotation.z = parseInt($('#rotateCubeZ').val().trim(), 10);
+			isCubeRotationChanged = false;
+		}
+		else {
+			cubeRotation.x += parseInt($('#rotateCubeX').val().trim(), 10);
+			cubeRotation.y += parseInt($('#rotateCubeY').val().trim(), 10);
+			cubeRotation.z += parseInt($('#rotateCubeZ').val().trim(), 10);
+		}
+
+		screenTransformationResult = convertMatrixToVertices(rotate(cubeRotation.x, cubeRotation.y, cubeRotation.z, cameraRotation.x, cameraRotation.y, cameraRotation.z));
+		draw();
+	});
+
+	buttonRotateCamera.on('click', function () {
+		var isValid = true;
+		rotateCameraInputs.each(function () {
+			var errorContainer;
+			if ($(this).val() === '') {
+				isValid = false;
+				errorContainer = $(this).siblings('div.invalid-feedback');
+				errorContainer.html(errorContainer.data('requiredMessage'));
+				isValid ? $(this).removeClass('is-invalid') : $(this).addClass('is-invalid');
+			}
+		});
+
+		if (!isValid)
+			return false;
+
+		if (isCameraRotationChanged) {
+			cameraRotation.x = parseInt($('#rotateCameraX').val().trim(), 10);
+			cameraRotation.y = parseInt($('#rotateCameraY').val().trim(), 10);
+			cameraRotation.z = parseInt($('#rotateCameraZ').val().trim(), 10);
+			isCameraRotationChanged = false;
+		}
+		else {
+			cameraRotation.x += parseInt($('#rotateCameraX').val().trim(), 10);
+			cameraRotation.y += parseInt($('#rotateCameraY').val().trim(), 10);
+			cameraRotation.z += parseInt($('#rotateCameraZ').val().trim(), 10);
+		}
+
+		screenTransformationResult = convertMatrixToVertices(rotate(cubeRotation.x, cubeRotation.y, cubeRotation.z, cameraRotation.x, cameraRotation.y, cameraRotation.z));
+		draw();
+	});
+
+	buttonRotateOnArbitraryAxis.on('click', function () {
+		var isValid = true;
+		rotateOnArbitraryAxisInputs.each(function () {
+			var errorContainer;
+			if ($(this).val() === '' && (!$('#isRotateOnArbitraryAxisAnimate').is(':checked') || $(this).prop('id') !== 'rotateOnArbitraryAxisTheta')) {
+				isValid = false;
+				errorContainer = $(this).siblings('div.invalid-feedback');
+				errorContainer.html(errorContainer.data('requiredMessage'));
+				isValid ? $(this).removeClass('is-invalid') : $(this).addClass('is-invalid');
+			}
+		});
+
+		if (!isValid)
+			return false;
+
+		var x     = parseInt($('#rotateOnArbitraryAxisX').val(), 10),
+		    y     = parseInt($('#rotateOnArbitraryAxisY').val(), 10),
+		    z     = parseInt($('#rotateOnArbitraryAxisZ').val(), 10),
+		    theta = parseInt($('#rotateOnArbitraryAxisTheta').val(), 10);
+
+		if (y === 0 && z === 0) { // this will cause d = 0 in the normalization axis matrix, thus lead to division by zero error
+			var worldCoordinateSystemPosition, screenCoordinateSystemPosition;
+			worldCoordinateSystemPosition = multiplyMatrix(convertVerticesToMatrix(vertices), findRotationMatrix(theta, 0, 0));
+			screenCoordinateSystemPosition = multiplyMatrix(worldCoordinateSystemPosition, screenTransformationMatrix); // don't need viewCoordinateSystemPosition because the camera doesn't move
+
+			screenTransformationResult = convertMatrixToVertices(screenCoordinateSystemPosition);
+			draw();
+		}
+		else {
+			var vector                    = normalizeVector(x, y, z),
+			    normalizationAxisMatrix   = findNormalizationAxisMatrix(vector),
+			    denormalizationAxisMatrix = findDenormalizationAxisMatrix(vector),
+			    normalizedVertices        = multiplyMatrix(convertVerticesToMatrix(vertices), normalizationAxisMatrix);
+
+			screenTransformationResult = convertMatrixToVertices(rotateOnArbitraryAxis(normalizedVertices, theta, denormalizationAxisMatrix));
+			draw();
+		}
+	});
 
 	canvas.on('contextmenu', function () { // prevent right click context menu from popping up in the canvas
 		return false;

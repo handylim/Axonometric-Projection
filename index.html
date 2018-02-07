@@ -19,7 +19,354 @@
 			<div class='col col-md-auto'>
 				<canvas id='canvas' width='650' height='650'></canvas>
 			</div>
-			<div class='col'>
+			<div id='accordion' class='col'>
+				<div class='card'>
+					<div id='rotateCubeHeader' class='card-header'>
+						<h3 class='mb-0'
+						    data-toggle='collapse'
+						    data-target='#rotateCubeCollapse'
+						    aria-expanded='true'
+						    aria-controls='rotateCubeCollapse'>
+							Rotate the cube
+						</h3>
+					</div>
+					<div id='rotateCubeCollapse'
+					     class='collapse show'
+					     aria-labelledby='rotateCubeHeader'
+					     data-parent='#accordion'>
+						<div class='card-body'>
+							<div class='row'>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>x</var>
+											</span>
+										</div>
+										<input id='rotateCubeX'
+										       type='text'
+										       name='rotateCube'
+										       class='form-control'
+										       placeholder='Rotate in x-axis'>
+										<div class='input-group-append'>
+											<span class='input-group-text'>
+												<var>&deg;</var>
+											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>x</var> must be a rational numbers'
+										     data-required-message='The value of <var>x</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>y</var>
+											</span>
+										</div>
+										<input id='rotateCubeY'
+										       type='text'
+										       name='rotateCube'
+										       class='form-control'
+										       placeholder='Rotate in y-axis'>
+										<div class='input-group-append'>
+											<span class='input-group-text'>
+												<var>&deg;</var>
+											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>y</var> must be a rational numbers'
+										     data-required-message='The value of <var>y</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>z</var>
+											</span>
+										</div>
+										<input id='rotateCubeZ'
+										       type='text'
+										       name='rotateCube'
+										       class='form-control'
+										       placeholder='Rotate in z-axis'>
+										<div class='input-group-append'>
+											<span class='input-group-text'>
+												<var>&deg;</var>
+											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>z</var> must be a rational numbers'
+										     data-required-message='The value of <var>z</var> is required'>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='d-flex justify-content-between align-items-center mt-3'>
+								<div class='custom-control custom-radio'>
+									<input type='radio'
+									       id='animateCubeX'
+									       name='animateCube'
+									       class='custom-control-input'>
+									<label class='custom-control-label small no-select'
+									       for='animateCubeX'>Animate cube in <var>x</var>-axis</label>
+								</div>
+								<div class='custom-control custom-radio'>
+									<input type='radio'
+									       id='animateCubeY'
+									       name='animateCube'
+									       class='custom-control-input'>
+									<label class='custom-control-label small no-select'
+									       for='animateCubeY'>Animate cube in <var>y</var>-axis</label>
+								</div>
+								<div class='custom-control custom-radio'>
+									<input type='radio'
+									       id='animateCubeZ'
+									       name='animateCube'
+									       class='custom-control-input'>
+									<label class='custom-control-label small no-select'
+									       for='animateCubeZ'>Animate cube in <var>z</var>-axis</label>
+								</div>
+								<button id='btnRotateCube' class='btn btn-sm btn-primary'>Rotate</button>
+								<button id='btnStopCubeAnimation' class='btn btn-sm btn-danger d-none'>Stop</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='card'>
+					<div id='rotateCameraHeader' class='card-header'>
+						<h3 class='mb-0'
+						    data-toggle='collapse'
+						    data-target='#rotateCameraCollapse'
+						    aria-expanded='true'
+						    aria-controls='rotateCameraCollapse'>
+							Rotate the camera (viewer)
+						</h3>
+					</div>
+					<div id='rotateCameraCollapse'
+					     class='collapse'
+					     aria-labelledby='rotateCameraHeader'
+					     data-parent='#accordion'>
+						<div class='card-body'>
+							<div class='row'>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>x</var>
+											</span>
+										</div>
+										<input id='rotateCameraX'
+										       type='text'
+										       name='rotateCamera'
+										       class='form-control'
+										       placeholder='Rotate in x-axis'>
+										<div class='input-group-append'>
+											<span class='input-group-text'>
+												<var>&deg;</var>
+											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>x</var> must be a rational numbers'
+										     data-required-message='The value of <var>x</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>y</var>
+											</span>
+										</div>
+										<input id='rotateCameraY'
+										       type='text'
+										       name='rotateCamera'
+										       class='form-control'
+										       placeholder='Rotate in y-axis'>
+										<div class='input-group-append'>
+											<span class='input-group-text'>
+												<var>&deg;</var>
+											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>y</var> must be a rational numbers'
+										     data-required-message='The value of <var>y</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>z</var>
+											</span>
+										</div>
+										<input id='rotateCameraZ'
+										       type='text'
+										       name='rotateCamera'
+										       class='form-control'
+										       placeholder='Rotate in z-axis'>
+										<div class='input-group-append'>
+											<span class='input-group-text'>
+												<var>&deg;</var>
+											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>z</var> must be a rational numbers'
+										     data-required-message='The value of <var>z</var> is required'>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='d-flex justify-content-between align-items-center mt-3'>
+								<div class='custom-control custom-radio'>
+									<input type='radio'
+									       id='animateCameraX'
+									       name='animateCamera'
+									       class='custom-control-input'>
+									<label class='custom-control-label small no-select'
+									       for='animateCameraX'>Animate camera in <var>x</var>-axis</label>
+								</div>
+								<div class='custom-control custom-radio'>
+									<input type='radio'
+									       id='animateCameraY'
+									       name='animateCamera'
+									       class='custom-control-input'>
+									<label class='custom-control-label small no-select'
+									       for='animateCameraY'>Animate camera in <var>y</var>-axis</label>
+								</div>
+								<div class='custom-control custom-radio'>
+									<input type='radio'
+									       id='animateCameraZ'
+									       name='animateCamera'
+									       class='custom-control-input'>
+									<label class='custom-control-label small no-select'
+									       for='animateCameraZ'>Animate camera in <var>z</var>-axis</label>
+								</div>
+								<button id='btnRotateCamera' class='btn btn-sm btn-primary'>Rotate</button>
+								<button id='btnStopCameraAnimation' class='btn btn-sm btn-danger d-none'>Stop</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='card'>
+					<div id='rotateOnArbitraryAxisHeader' class='card-header'>
+						<h3 class='mb-0'
+						    data-toggle='collapse'
+						    data-target='#rotateOnArbitraryAxisCollapse'
+						    aria-expanded='true'
+						    aria-controls='rotateOnArbitraryAxisCollapse'>
+							Rotate on arbitrary axis
+						</h3>
+					</div>
+					<div id='rotateOnArbitraryAxisCollapse'
+					     class='collapse'
+					     aria-labelledby='rotateOnArbitraryAxisHeader'
+					     data-parent='#accordion'>
+						<div class='card-body'>
+							<div class='row'>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>x</var>
+											</span>
+										</div>
+										<input id='rotateOnArbitraryAxisX'
+										       type='text'
+										       name='rotateOnArbitraryAxis'
+										       class='form-control'
+										       placeholder='Value of x-axis'>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>x</var> must be a rational numbers'
+										     data-required-message='The value of <var>x</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>y</var>
+											</span>
+										</div>
+										<input id='rotateOnArbitraryAxisY'
+										       type='text'
+										       name='rotateOnArbitraryAxis'
+										       class='form-control'
+										       placeholder='Value of y-axis'>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>y</var> must be a rational numbers'
+										     data-required-message='The value of <var>y</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>z</var>
+											</span>
+										</div>
+										<input id='rotateOnArbitraryAxisZ'
+										       type='text'
+										       name='rotateOnArbitraryAxis'
+										       class='form-control'
+										       placeholder='Value of z-axis'>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>z</var> must be a rational numbers'
+										     data-required-message='The value of <var>z</var> is required'>
+										</div>
+									</div>
+								</div>
+								<div class='col'>
+									<div class='input-group input-group-sm'>
+										<div class='input-group-prepend'>
+											<span class='input-group-text'>
+												<var>θ</var>
+											</span>
+										</div>
+										<input id='rotateOnArbitraryAxisTheta'
+										       type='text'
+										       name='rotateOnArbitraryAxis'
+										       class='form-control'
+										       placeholder='Value of θ'>
+										<div class='input-group-append'>
+   											<span class='input-group-text'>
+   												<var>&deg;</var>
+   											</span>
+										</div>
+										<div class='invalid-feedback'
+										     data-invalid-message='The value of <var>θ</var> must be a rational numbers'
+										     data-required-message='The value of <var>θ</var> is required'>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='d-flex justify-content-between align-items-center mt-3'>
+								<div class='custom-control custom-checkbox'>
+									<input type='checkbox'
+									       id='isRotateOnArbitraryAxisAnimate'
+									       class='custom-control-input' />
+									<label class='custom-control-label no-select' for='isRotateOnArbitraryAxisAnimate'>Animate</label>
+								</div>
+								<button id='btnRotateOnArbitraryAxis'
+								        class='btn btn-sm btn-primary'>
+									Rotate
+								</button>
+								<button id='btnStopRotateOnArbitraryAxisAnimation'
+								        class='btn btn-sm btn-danger d-none'>
+									Stop
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
