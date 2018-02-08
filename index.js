@@ -14,7 +14,8 @@ var canvas                     = document.getElementById('canvas'),
 	    [0, 0, 0, 0],
 	    [325, 325, 0, 1]
     ],
-    screenTransformationResult;
+    screenTransformationResult,
+    animation                  = null;
 
 function Vertex (x, y, z) {
 	this.x = x;
@@ -198,14 +199,76 @@ function rotate (xCube, yCube, zCube, xCamera, yCamera, zCamera) {
 	return screenCoordinateSystemPosition;
 }
 
-function rotateOnArbitraryAxis (normalizedVertices, teta, denormalizationAxisMatrix) {
+function rotateOnArbitraryAxis (normalizedVertices, theta, denormalizationAxisMatrix) {
 	var viewCoordinateSystemPosition, denormalizedVertices, screenCoordinateSystemPosition;
 
-	viewCoordinateSystemPosition = multiplyMatrix(normalizedVertices, findRotationMatrix(0, 0, teta));
+	viewCoordinateSystemPosition = multiplyMatrix(normalizedVertices, findRotationMatrix(0, 0, theta));
 	denormalizedVertices = multiplyMatrix(viewCoordinateSystemPosition, denormalizationAxisMatrix);
 	screenCoordinateSystemPosition = multiplyMatrix(denormalizedVertices, screenTransformationMatrix);
 
 	return screenCoordinateSystemPosition;
+}
+
+function rotateAnimation (rotationAxis, xCube, yCube, zCube, xCamera, yCamera, zCamera) {
+	var worldCoordinateSystemPosition, viewCoordinateSystemPosition, screenCoordinateSystemPosition;
+
+	worldCoordinateSystemPosition = multiplyMatrix(convertVerticesToMatrix(vertices), findRotationMatrix(xCube, yCube, zCube));
+	viewCoordinateSystemPosition = multiplyMatrix(worldCoordinateSystemPosition, findRotationMatrix(xCamera, yCamera, zCamera));
+	screenCoordinateSystemPosition = multiplyMatrix(viewCoordinateSystemPosition, screenTransformationMatrix);
+
+	screenTransformationResult = convertMatrixToVertices(screenCoordinateSystemPosition);
+	draw();
+
+	switch (rotationAxis) {
+		case 'xCube':
+			xCube <= 350 ? xCube += 10 : xCube = 0;
+			break;
+		case 'yCube':
+			yCube <= 350 ? yCube += 10 : yCube = 0;
+			break;
+		case 'zCube':
+			zCube <= 350 ? zCube += 10 : zCube = 0;
+			break;
+		case 'xCamera':
+			xCamera <= 350 ? xCamera += 10 : xCamera = 0;
+			break;
+		case 'yCamera':
+			yCamera <= 350 ? yCamera += 10 : yCamera = 0;
+			break;
+		case 'zCamera':
+			zCamera <= 350 ? zCamera += 10 : zCamera = 0;
+			break;
+	}
+
+	animation = setTimeout(rotateAnimation, 100, rotationAxis, xCube, yCube, zCube, xCamera, yCamera, zCamera);
+}
+
+function rotateOnArbitraryAxisAnimation (normalizedVertices, theta, denormalizationAxisMatrix) {
+	screenTransformationResult = convertMatrixToVertices(rotateOnArbitraryAxis(normalizedVertices, theta, denormalizationAxisMatrix));
+	draw();
+	theta <= 350 ? theta += 10 : theta = 0;
+	animation = setTimeout(rotateOnArbitraryAxisAnimation, 100, normalizedVertices, theta, denormalizationAxisMatrix);
+}
+
+function stopCubeAnimation (buttonRotateCube, buttonStopCubeAnimation) {
+	clearTimeout(animation);
+	$('input[type=radio][name=animateCube]').prop('checked', false);
+	buttonRotateCube.removeClass('d-none');
+	buttonStopCubeAnimation.addClass('d-none');
+}
+
+function stopCameraAnimation (buttonRotateCamera, buttonStopCameraAnimation) {
+	clearTimeout(animation);
+	$('input[type=radio][name=animateCamera]').prop('checked', false);
+	buttonRotateCamera.removeClass('d-none');
+	buttonStopCameraAnimation.addClass('d-none');
+}
+
+function stopRotateOnArbitraryAxisAnimation (buttonRotateOnArbitraryAxis, buttonStopRotateOnArbitraryAxisAnimation) {
+	clearTimeout(animation);
+	$('#isRotateOnArbitraryAxisAnimate').prop('checked', false);
+	buttonRotateOnArbitraryAxis.removeClass('d-none');
+	buttonStopRotateOnArbitraryAxisAnimation.addClass('d-none');
 }
 
 canvas = $('#canvas');
@@ -243,6 +306,9 @@ $(document).ready(function () {
 	var buttonRotateCube                         = $('#btnRotateCube'),
 	    buttonRotateCamera                       = $('#btnRotateCamera'),
 	    buttonRotateOnArbitraryAxis              = $('#btnRotateOnArbitraryAxis'),
+	    buttonStopCubeAnimation                  = $('#btnStopCubeAnimation'),
+	    buttonStopCameraAnimation                = $('#btnStopCameraAnimation'),
+	    buttonStopRotateOnArbitraryAxisAnimation = $('#btnStopRotateOnArbitraryAxisAnimation'),
 	    rotateCubeInputs                         = $('input[type=text][name=rotateCube].form-control'),
 	    rotateCameraInputs                       = $('input[type=text][name=rotateCamera].form-control'),
 	    rotateOnArbitraryAxisInputs              = $('input[type=text][name=rotateOnArbitraryAxis].form-control'),
@@ -280,6 +346,42 @@ $(document).ready(function () {
 		buttonRotateOnArbitraryAxis.prop('disabled', isInvalid);
 	});
 
+	$('input[type=radio][name=animateCube]').on('change', function () {
+		stopCameraAnimation(buttonRotateCamera, buttonStopCameraAnimation);
+		stopRotateOnArbitraryAxisAnimation(buttonRotateOnArbitraryAxis, buttonStopRotateOnArbitraryAxisAnimation);
+		rotateCubeInputs.prop('disabled', true);
+		rotateCubeInputs.removeClass('is-invalid');
+		var rotationAxis;
+		if ($(this).prop('id') === 'animateCubeX')
+			rotationAxis = 'xCube';
+		else if ($(this).prop('id') === 'animateCubeY')
+			rotationAxis = 'yCube';
+		else if ($(this).prop('id') === 'animateCubeZ')
+			rotationAxis = 'zCube';
+
+		animation = setTimeout(rotateAnimation, 100, rotationAxis, 0, 0, 0, 0, 0, 0);
+		buttonRotateCube.addClass('d-none');
+		buttonStopCubeAnimation.removeClass('d-none');
+	});
+
+	$('input[type=radio][name=animateCamera]').on('change', function () {
+		stopCubeAnimation(buttonRotateCube, buttonStopCubeAnimation);
+		stopRotateOnArbitraryAxisAnimation(buttonRotateOnArbitraryAxis, buttonStopRotateOnArbitraryAxisAnimation);
+		rotateCameraInputs.prop('disabled', true);
+		rotateCameraInputs.removeClass('is-invalid');
+		var rotationAxis;
+		if ($(this).prop('id') === 'animateCameraX')
+			rotationAxis = 'xCamera';
+		else if ($(this).prop('id') === 'animateCameraY')
+			rotationAxis = 'yCamera';
+		else if ($(this).prop('id') === 'animateCameraZ')
+			rotationAxis = 'zCamera';
+
+		animation = setTimeout(rotateAnimation, 100, rotationAxis, 0, 0, 0, 0, 0, 0);
+		buttonRotateCamera.addClass('d-none');
+		buttonStopCameraAnimation.removeClass('d-none');
+	});
+
 	buttonRotateCube.on('click', function () {
 		var isValid = true;
 		rotateCubeInputs.each(function () {
@@ -294,6 +396,8 @@ $(document).ready(function () {
 
 		if (!isValid)
 			return false;
+
+		clearTimeout(animation);
 
 		if (isCubeRotationChanged) {
 			cubeRotation.x = parseInt($('#rotateCubeX').val().trim(), 10);
@@ -326,6 +430,8 @@ $(document).ready(function () {
 		if (!isValid)
 			return false;
 
+		clearTimeout(animation);
+
 		if (isCameraRotationChanged) {
 			cameraRotation.x = parseInt($('#rotateCameraX').val().trim(), 10);
 			cameraRotation.y = parseInt($('#rotateCameraY').val().trim(), 10);
@@ -357,28 +463,58 @@ $(document).ready(function () {
 		if (!isValid)
 			return false;
 
+		stopCubeAnimation(buttonRotateCube, buttonStopCubeAnimation);
+		stopCameraAnimation(buttonRotateCamera, buttonStopCameraAnimation);
 		var x     = parseInt($('#rotateOnArbitraryAxisX').val(), 10),
 		    y     = parseInt($('#rotateOnArbitraryAxisY').val(), 10),
 		    z     = parseInt($('#rotateOnArbitraryAxisZ').val(), 10),
 		    theta = parseInt($('#rotateOnArbitraryAxisTheta').val(), 10);
 
-		if (y === 0 && z === 0) { // this will cause d = 0 in the normalization axis matrix, thus lead to division by zero error
-			var worldCoordinateSystemPosition, screenCoordinateSystemPosition;
-			worldCoordinateSystemPosition = multiplyMatrix(convertVerticesToMatrix(vertices), findRotationMatrix(theta, 0, 0));
-			screenCoordinateSystemPosition = multiplyMatrix(worldCoordinateSystemPosition, screenTransformationMatrix); // don't need viewCoordinateSystemPosition because the camera doesn't move
+		if (y === 0 && z === 0) // this will cause d = 0 in the normalization axis matrix, thus lead to division by zero error
+			if ($('#isRotateOnArbitraryAxisAnimate').is(':checked')) {
+				rotateOnArbitraryAxisInputs.prop('disabled', true);
+				animation = setTimeout(rotateAnimation, 100, 'xCube', 0, 0, 0, 0, 0, 0); // simply animate the rotation on x-axis
+				buttonRotateOnArbitraryAxis.addClass('d-none');
+				buttonStopRotateOnArbitraryAxisAnimation.removeClass('d-none');
+			}
+			else {
+				var worldCoordinateSystemPosition, screenCoordinateSystemPosition;
+				worldCoordinateSystemPosition = multiplyMatrix(convertVerticesToMatrix(vertices), findRotationMatrix(theta, 0, 0));
+				screenCoordinateSystemPosition = multiplyMatrix(worldCoordinateSystemPosition, screenTransformationMatrix); // don't need viewCoordinateSystemPosition because the camera doesn't move
 
-			screenTransformationResult = convertMatrixToVertices(screenCoordinateSystemPosition);
-			draw();
-		}
+				screenTransformationResult = convertMatrixToVertices(screenCoordinateSystemPosition);
+				draw();
+			}
 		else {
 			var vector                    = normalizeVector(x, y, z),
 			    normalizationAxisMatrix   = findNormalizationAxisMatrix(vector),
 			    denormalizationAxisMatrix = findDenormalizationAxisMatrix(vector),
 			    normalizedVertices        = multiplyMatrix(convertVerticesToMatrix(vertices), normalizationAxisMatrix);
 
-			screenTransformationResult = convertMatrixToVertices(rotateOnArbitraryAxis(normalizedVertices, theta, denormalizationAxisMatrix));
-			draw();
+			if ($('#isRotateOnArbitraryAxisAnimate').is(':checked')) {
+				rotateOnArbitraryAxisInputs.prop('disabled', true);
+				animation = setTimeout(rotateOnArbitraryAxisAnimation, 100, normalizedVertices, 0, denormalizationAxisMatrix);
+				buttonRotateOnArbitraryAxis.addClass('d-none');
+				buttonStopRotateOnArbitraryAxisAnimation.removeClass('d-none');
+			}
+			else {
+				screenTransformationResult = convertMatrixToVertices(rotateOnArbitraryAxis(normalizedVertices, theta, denormalizationAxisMatrix));
+				draw();
+			}
 		}
+	});
+
+	buttonStopCubeAnimation.on('click', function () {
+		stopCubeAnimation(buttonRotateCube, buttonStopCubeAnimation);
+		rotateCubeInputs.prop('disabled', false);
+	});
+	buttonStopCameraAnimation.on('click', function () {
+		stopCameraAnimation(buttonRotateCamera, buttonStopCameraAnimation);
+		rotateCameraInputs.prop('disabled', false);
+	});
+	buttonStopRotateOnArbitraryAxisAnimation.on('click', function () {
+		stopRotateOnArbitraryAxisAnimation(buttonRotateOnArbitraryAxis, buttonStopRotateOnArbitraryAxisAnimation);
+		rotateOnArbitraryAxisInputs.prop('disabled', false);
 	});
 
 	canvas.on('contextmenu', function () { // prevent right click context menu from popping up in the canvas
